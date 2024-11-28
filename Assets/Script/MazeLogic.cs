@@ -4,21 +4,21 @@ using UnityEngine;
 using Unity.AI.Navigation;
 
 public class MapLocation
-    {
-        public int x;
-        public int z;
-        
-        public MapLocation(int _x, int _z)
-        {
-            x = _x;
-            z = _z;
-        }
+{
+    public int x;
+    public int z;
 
-        public override string ToString()
-        {
-            return $"({x}, {z})";
-        }
+    public MapLocation(int _x, int _z)
+    {
+        x = _x;
+        z = _z;
     }
+
+    public override string ToString()
+    {
+        return $"({x}, {z})";
+    }
+}
 
 
 public class MazeLogic : MonoBehaviour
@@ -28,8 +28,8 @@ public class MazeLogic : MonoBehaviour
     public int scale = 6;
     public GameObject Enemy;
     public GameObject Character;
-    public int EnemyCount = 3;
-    public int RoomCount = 3;
+    public int EnemyCount = 1;
+    public int RoomCount = 1;
     public int RoomMinSize = 6;
     public int RoomMaxSize = 10;
     public NavMeshSurface surface;
@@ -37,8 +37,8 @@ public class MazeLogic : MonoBehaviour
     public byte[,] map;
     GameObject[,] BuildingList;
 
-    // Start is called before the first frame update
-    void Start()
+    // Mark Start() as virtual so it can be overridden
+    public virtual void Start()
     {
         InitializeMap();
         GenerateMaps();
@@ -129,9 +129,9 @@ public class MazeLogic : MonoBehaviour
             {
                 if (map[x, z] == 1)
                 {
-                    Vector3 position = new Vector3(x * scale, 0, z*scale);
+                    Vector3 position = new Vector3(x * scale, 0, z * scale);
                     GameObject wall = Instantiate(Cube[Random.Range(0, Cube.Count)], position, Quaternion.identity);
-                    wall.transform.localScale= new Vector3(scale, scale, scale);
+                    wall.transform.localScale = new Vector3(scale * 0.7f, scale * 0.7f, scale * 0.7f);
                 }
             }
         }
@@ -141,7 +141,7 @@ public class MazeLogic : MonoBehaviour
     public int CountSquareNeighbours(int x, int z)
     {
         int count = 0;
-        if (x <= 0 || x >= width -1 || z <= 0 || z>= depth -1) return 5;
+        if (x <= 0 || x >= width - 1 || z <= 0 || z >= depth - 1) return 5;
         if (map[x - 1, z] == 0) count++;
         if (map[x + 1, z] == 0) count++;
         if (map[x, z + 1] == 0) count++;
@@ -159,7 +159,7 @@ public class MazeLogic : MonoBehaviour
             {
                 int x = Random.Range(0, width);
                 int z = Random.Range(0, depth);
-                if (map[x,z] == 2 && EnemySet != EnemyCount)
+                if (map[x, z] == 2 && EnemySet != EnemyCount)
                 {
                     Debug.Log("placing Enemy");
                     EnemySet++;
@@ -167,11 +167,10 @@ public class MazeLogic : MonoBehaviour
                 }
                 else if (EnemySet == EnemyCount)
                 {
-                Debug.Log("already Placing All the Enemy");
-                return;
+                    Debug.Log("already Placing All the Enemy");
+                    return;
                 }
             }
         }
     }
 }
-    
