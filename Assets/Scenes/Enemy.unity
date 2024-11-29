@@ -536,6 +536,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: goblin_d_shareyko
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 1afb57aa6ecc07242a9fb5415ebbdba1, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: ceed71ee098b58f468dd6233935cb9da, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -791,6 +795,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Warrok W Kurniawan
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 0c8068189a5f28b41b9a10217aae4894, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: ceed71ee098b58f468dd6233935cb9da, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
