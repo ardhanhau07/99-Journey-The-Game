@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 public class MutantLogic : MonoBehaviour
 {
+    [Header("Mutant Setting")]
    public float hitPoints = 100f;
     public float turnSpeed = 15f;
     public Transform target;
@@ -17,9 +18,20 @@ public class MutantLogic : MonoBehaviour
     private Animator anim;
     private int currentWaypointIndex = 0;
     private bool isDead = false;
+    [Header("Mutant SFX")]
+    public AudioClip GetHitAudio;
+    public AudioClip StepAudio;
+    public AudioClip AttackSwingAudio;
+    public AudioClip AttackConnectAudio;
+    public AudioClip DeathAudio;
+    AudioSource MutantAudio;
+    [Header("Mutant VFX")]
+    public ParticleSystem SlashEffect;
 
     public void TakeDamage(float damage)
     {
+        MutantAudio.clip = GetHitAudio;
+        MutantAudio.Play();
         if (isDead) return;
 
         hitPoints -= damage;
@@ -29,6 +41,8 @@ public class MutantLogic : MonoBehaviour
 
         if (hitPoints <= 0)
         {
+            MutantAudio.clip = DeathAudio;
+            MutantAudio.Play();
             HandleDeath();
         }
     }
@@ -41,11 +55,12 @@ public class MutantLogic : MonoBehaviour
         Destroy(gameObject, 3f); // Hancurkan musuh setelah 3 detik
     }
 
-    void Start()
+   private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponentInChildren<Animator>();
         anim.SetFloat("Hitpoint", hitPoints);
+        MutantAudio = this.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -61,6 +76,7 @@ public class MutantLogic : MonoBehaviour
             if (DistancetoTarget > AttackRange)
             {
                 ChaseTarget();
+                SlashEffect.Stop();
             }
             else
             {
@@ -124,4 +140,25 @@ public class MutantLogic : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, AttackRange);
     }
+
+    public void SlashEffectToggleOn()
+    {
+        SlashEffect.Play();
+    }
+    public void step(){
+        MutantAudio.clip = StepAudio;
+        MutantAudio.Play();
+    }
+
+    public void HitConnect(){
+        MutantAudio.clip = AttackSwingAudio;
+        MutantAudio.Play();
+        if(DistancetoTarget <= agent.stoppingDistance)
+        {
+            MutantAudio.clip = AttackConnectAudio;
+            MutantAudio.Play();
+            target.GetComponent<PlayerLogic>().PlayerGetHit(50f);
+        }
+    }
+
 }
