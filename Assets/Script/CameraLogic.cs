@@ -10,18 +10,26 @@ public class CameraLogic : MonoBehaviour
     public float RotationSpeed;
     public GameObject TPSCamera, AIMCamera;
     public GameObject crosshair;
-    bool TPSMode = true, AIMMode = true;
+    public Vector3 TPSCameraOffset;
+    public Vector3 AIMCameraOffset;
+    public float zoomSpeed = 2f;
+    public float minZoom = -10f;
+    public float maxZoom = -2f;
 
-    // Start is called before the first frame update
+    private float currentZoom;
+    private bool TPSMode = true, AIMMode = true;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         crosshair.SetActive(false);
+        currentZoom = TPSCameraOffset.z;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        HandleCameraZoom();
+
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -35,13 +43,29 @@ public class CameraLogic : MonoBehaviour
             {
                 Player.forward = Vector3.Slerp(Player.forward, InputDir.normalized, Time.deltaTime * RotationSpeed);
             }
+
+            TPSCamera.transform.position = Player.position + new Vector3(TPSCameraOffset.x, TPSCameraOffset.y, currentZoom);
         }
         else if (AIMMode)
         {
             Vector3 dirToCombatLookAt = AIMViewPoint.position - new Vector3(transform.position.x, AIMViewPoint.position.y, transform.position.z);
-            AIMViewPoint.forward= dirToCombatLookAt.normalized;
+            AIMViewPoint.forward = dirToCombatLookAt.normalized;
 
             Player.forward = Vector3.Slerp(Player.forward, dirToCombatLookAt.normalized, Time.deltaTime * RotationSpeed);
+
+            AIMCamera.transform.position = Player.position + AIMCameraOffset;
+        }
+
+        CameraModeChanger(TPSMode, AIMMode);
+    }
+
+    private void HandleCameraZoom()
+    {
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        if (scrollInput != 0)
+        {
+            currentZoom += scrollInput * zoomSpeed;
+            currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
         }
     }
 
@@ -60,7 +84,7 @@ public class CameraLogic : MonoBehaviour
         {
             TPSCamera.SetActive(false);
             AIMCamera.SetActive(true);
-            crosshair.SetActive(true); 
+            crosshair.SetActive(true);
         }
     }
 }
