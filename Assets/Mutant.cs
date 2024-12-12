@@ -8,14 +8,14 @@ public class Mutant : MonoBehaviour
 {
     public float hitPoints = 100f;
     public float turnSpeed = 15f;
-    //public Transform target;
-    public GameObject target;
+  // public Transform target;
+public GameObject target;
     public float ChaseRange;
     private NavMeshAgent agent;
     private float DistancetoTarget;
     private float DistancetoDefault;
     private Animator anim;
-    public PlayerLogic playerLogic;
+ public PlayerLogic playerLogic;
     Vector3 DefaultPosition;
     //public MazeLogic MutantMaze;
 
@@ -28,13 +28,13 @@ public class Mutant : MonoBehaviour
     AudioSource MutantAudio;
 
     [Header("Mutant VFX")]
-    public ParticleSystem Slash;
+    public ParticleSystem SlashEffect;
 
 
     private void Start()
     {
        // MutantMaze = FindObjectOfType<MazeLogic>();
-        target = GameObject.FindGameObjectWithTag("Player");
+       // target = GameObject.FindGameObjectWithTag("Player");
         agent = this.GetComponent<NavMeshAgent>();
         anim = this.GetComponent<Animator>();
         anim.SetFloat("Hitpoint", hitPoints);
@@ -53,7 +53,7 @@ public class Mutant : MonoBehaviour
             if (DistancetoTarget > agent.stoppingDistance + 2f)
             {
                 ChaseTarget();
-                Slash.Stop();
+                SlashEffect.Stop();
             }
             else if (DistancetoTarget <= agent.stoppingDistance)
             {
@@ -73,8 +73,8 @@ public class Mutant : MonoBehaviour
         }
     }
 
-    public void SlashToggleOn(){
-        Slash.Play();
+    public void SlashEffectToggleOn(){
+        SlashEffect.Play();
     }
 
     private void FaceTarget(Vector3 destination)
