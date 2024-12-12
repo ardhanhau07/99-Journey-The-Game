@@ -43,6 +43,7 @@ public class CameraLogic : MonoBehaviour
 
             Player.forward = Vector3.Slerp(Player.forward, dirToCombatLookAt.normalized, Time.deltaTime * RotationSpeed);
         }
+        CameraModeChanger(TPSMode, AIMMode);
     }
 
     public void CameraModeChanger(bool TPS, bool AIM)

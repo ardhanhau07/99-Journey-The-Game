@@ -4,81 +4,41 @@ using UnityEngine;
 
 public class RecursiveDFS : MazeLogic
 {
-    public GameObject bossPrefab;  // Declare bossPrefab
-    public override void Start()
+    public List<MapLocation> directions = new List<MapLocation>()
     {
-        base.Start(); // Call base Start to maintain the logic from MazeLogic
-        AddBattleAreas(); // Custom logic for battle areas
+        new MapLocation(1, 0),
+        new MapLocation(0, 1),
+        new MapLocation(-1, 0),
+        new MapLocation(0, -1),
+    };
+
+    public override void GenerateMaps()
+    {
+        Generate(5, 5);
     }
 
-    // Menambahkan area bertarung dan bos
-    private void AddBattleAreas()
+    void Generate(int x, int z)
     {
-        // Area untuk bertarung dengan musuh biasa
-        CreateOpenArea(5, 5, 5, 5); // Area pertama
-        CreateOpenArea(12, 5, 4, 4); // Area kedua
-
-        // Area untuk bertarung dengan bos
-        CreateOpenArea(8, 15, 8, 4); // Area bos
-
-        // Menghasilkan musuh di area bertarung
-        PlaceEnemy();  // Call PlaceEnemy instead of SpawnEnemies
-
-        // Menghasilkan bos di area bos
-        SpawnBoss();
-    }
-
-    // Menempatkan musuh di lokasi yang sesuai
-    public new void PlaceEnemy()
-    {
-        int EnemySet = 0;
-        for (int i = 0; i < depth; i++)
+        // Periksa apakah posisi berada dalam area plane
+        if (!IsInsidePlane(new Vector3(
+                mazeManager.position.x + (x * scale),
+                mazeManager.position.y,
+                mazeManager.position.z + (z * scale)
+            )))
         {
-            for (int j = 0; j < width; j++)
-            {
-                int x = Random.Range(0, width);
-                int z = Random.Range(0, depth);
-                if (map[x, z] == 2 && EnemySet < EnemyCount) // Jika ada ruang terbuka untuk musuh
-                {
-                    Debug.Log("Placing Enemy at (" + x + ", " + z + ")");
-                    EnemySet++;
-                    Instantiate(Enemy, new Vector3(x * scale, 0, z * scale), Quaternion.identity);
-                }
-                if (EnemySet >= EnemyCount) return;
-            }
+            return;
         }
+
+        if (CountSquareNeighbours(x, z) >= 2) return;
+        map[x, z] = 0;
+
+        directions.Shuffle();
+
+        Generate(x + directions[0].x, z + directions[0].z);
+        Generate(x + directions[1].x, z + directions[1].z);
+        Generate(x + directions[2].x, z + directions[2].z);
+        Generate(x + directions[3].x, z + directions[3].z);
     }
 
-    // Menempatkan boss di area tertentu
-    private void SpawnBoss()
-    {
-        // Spawn bos di titik yang lebih luas (area bertarung dengan bos)
-        Vector3 bossPosition = new Vector3(8 * scale, 0, 15 * scale); // Lokasi bos
-        Instantiate(bossPrefab, bossPosition, Quaternion.identity);
-    }
 
-    // Mengubah metode untuk menambah ruang bertarung
-    private void CreateOpenArea(int startX, int startY, int width, int height)
-    {
-        for (int x = startX; x < startX + width; x++)
-        {
-            for (int y = startY; y < startY + height; y++)
-            {
-                if (x >= 0 && x < width && y >= 0 && y < depth)
-                {
-                    map[x, y] = 2; // Buat jalan di area terbuka
-                }
-            }
-        }
-    }
-
-    // Override untuk tempatkan karakter
-    public override void PlaceCharacter()
-    {
-        // Menempatkan karakter di posisi awal
-        int x = 1; // X posisi
-        int z = 1; // Z posisi
-        Character.transform.position = new Vector3(x * scale, 0, z * scale);
-        Debug.Log("Placing character at (" + x + ", " + z + ")");
-    }
 }
